@@ -7,8 +7,14 @@ let crypto = require('crypto');
 //"https://file-portal.eu-north-1.elasticbeanstalk.com"
  let app = express();
  app.use(express.static('public'));
+ 
+ app.use(function(req, res, next) {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+ });
 //  let server = http.createServer(app)
 let server = http.createServer(app)
+server.c
  let io = new Server(server,{
    cors:{
       origin: "https://cgwubiscl6.execute-api.eu-north-1.amazonaws.com",
@@ -67,9 +73,3 @@ app.get('/getUniqueId',(req,res)=>{
  let generateUniqueRoomId = ()=>{
    return crypto.randomUUID();
  }
-
- app.use(function(req, res, next) {
-   res.header("Access-Control-Allow-Origin", "*");
-   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-   next();
- });
