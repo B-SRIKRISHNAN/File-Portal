@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FilePortal</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+
+<body>
+    <div id="sender">
+        <input type="file" id="fileInput" />
+        <button type="button" id="linkGenerator">Get Unique Magic Signature</button>
+        <div>Memorize Unique Signature: <span id="link"></span></div>
+    </div>
+    <div id="logs"></div>
+    <script src="./index.js"></script>
+</body>
+
+</html>
