@@ -11,7 +11,7 @@ let crypto = require('crypto');
 let server = http.createServer(app)
  let io = new Server(server,{
    cors:{
-      origin: "*",
+      origin: "https://cgwubiscl6.execute-api.eu-north-1.amazonaws.com",
       credentials:false
    },
    maxHttpBufferSize: '1mb'
