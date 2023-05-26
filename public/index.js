@@ -8,7 +8,8 @@ let linkGenerator = document.getElementById("linkGenerator");
 let link = document.getElementById("link");
 let logs = document.getElementById('logs');
 let downloadStatus = document.getElementById("downloadStatus");
-let url = process.env.API_ENDPOINT
+let url = "http://getting-started-app-env.eba-ibg6rqes.eu-north-1.elasticbeanstalk.com" 
+process.env.API_ENDPOINT
 
 
 let apiUrl = url;// "https://file-portal.eu-north-1.elasticbeanstalk.com";
