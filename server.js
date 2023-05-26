@@ -11,7 +11,7 @@ let crypto = require('crypto');
 let server = http.createServer(app)
  let io = new Server(server,{
    cors:{
-      origin: url,
+      origin: "*",
       credentials:false
    },
    maxHttpBufferSize: '1mb'
