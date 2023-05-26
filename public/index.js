@@ -8,8 +8,9 @@ let linkGenerator = document.getElementById("linkGenerator");
 let link = document.getElementById("link");
 let logs = document.getElementById('logs');
 let downloadStatus = document.getElementById("downloadStatus");
-let url = "https://cgwubiscl6.execute-api.eu-north-1.amazonaws.com"
-// "http://getting-started-app-env.eba-ibg6rqes.eu-north-1.elasticbeanstalk.com" 
+let url = 
+// "https://cgwubiscl6.execute-api.eu-north-1.amazonaws.com"
+"http://getting-started-app-env.eba-ibg6rqes.eu-north-1.elasticbeanstalk.com" 
 // process.env.API_ENDPOINT
 
 
