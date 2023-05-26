@@ -14,7 +14,6 @@ let crypto = require('crypto');
  });
 //  let server = http.createServer(app)
 let server = http.createServer(app)
-server.c
  let io = new Server(server,{
    cors:{
       origin: "https://cgwubiscl6.execute-api.eu-north-1.amazonaws.com",
