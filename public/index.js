@@ -8,13 +8,16 @@ let linkGenerator = document.getElementById("linkGenerator");
 let link = document.getElementById("link");
 let logs = document.getElementById('logs');
 let downloadStatus = document.getElementById("downloadStatus");
-let url = "http://getting-started-app-env.eba-ibg6rqes.eu-north-1.elasticbeanstalk.com" 
+let url = "https://cgwubiscl6.execute-api.eu-north-1.amazonaws.com"
+// "http://getting-started-app-env.eba-ibg6rqes.eu-north-1.elasticbeanstalk.com" 
 // process.env.API_ENDPOINT
 
 
 let apiUrl = url;// "https://file-portal.eu-north-1.elasticbeanstalk.com";
 // "https://g0dtkanc97.execute-api.eu-north-1.amazonaws.com/fileportal_1";
-let socketUrl= url;// "https://file-portal.eu-north-1.elasticbeanstalk.com";
+let socketUrl= url;
+
+// "https://file-portal.eu-north-1.elasticbeanstalk.com";
 // "wss://1a31d2dgm6.execute-api.eu-north-1.amazonaws.com/production";
 if(!reciever&&!input)
     throw new Error('No valid elements found');
