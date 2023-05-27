@@ -8,11 +8,11 @@ let cors = require('cors');
 //"https://file-portal.eu-north-1.elasticbeanstalk.com"
  let app = express();
  app.use(express.static('public'));
- app.use(cors());
-//  app.use(function(req, res, next) {
-//    res.header("Access-Control-Allow-Origin", "*");
-//    // res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//  });
+//  app.use(cors());
+ app.use(function(req, res, next) {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+ });
 //  let server = http.createServer(app)
 let server = http.createServer(app);
  let io = new Server(server,{
