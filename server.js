@@ -14,10 +14,10 @@ let cors = require('cors');
 //    // res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 //  });
 //  let server = http.createServer(app)
-let server = http.createServer(app)
+let server = http.createServer(app);
  let io = new Server(server,{
    cors:{
-      origin: "https://cgwubiscl6.execute-api.eu-north-1.amazonaws.com",
+      origin: "*:*",
       credentials:false
    },
    maxHttpBufferSize: '1mb'
@@ -66,7 +66,7 @@ app.get('/getUniqueId',(req,res)=>{
    let uniqueId = generateUniqueRoomId();
    res.send(uniqueId);
 })
- server.listen(process.env.PORT,()=>{
+ app.listen(process.env.PORT,()=>{
     console.log("listening");
  });
 
