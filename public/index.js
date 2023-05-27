@@ -16,7 +16,8 @@ let url =
 
 let apiUrl = url;// "https://file-portal.eu-north-1.elasticbeanstalk.com";
 // "https://g0dtkanc97.execute-api.eu-north-1.amazonaws.com/fileportal_1";
-let socketUrl= "wss://ah0svbniye.execute-api.eu-north-1.amazonaws.com/production";
+let socketUrl="http://getting-started-app-env.eba-ibg6rqes.eu-north-1.elasticbeanstalk.com" 
+//  "wss://ah0svbniye.execute-api.eu-north-1.amazonaws.com/production";
 //  url;
 
 // "https://file-portal.eu-north-1.elasticbeanstalk.com";
