@@ -5,7 +5,6 @@ let {Server} = require('socket.io')
 let url = process.env.API_ENDPOINT||"http://localhost:3000"
 let crypto = require('crypto');
 let cors = require('cors');
-//"https://file-portal.eu-north-1.elasticbeanstalk.com"
  let app = express();
  app.use(express.static('public'));
 //  app.use(cors());
@@ -14,7 +13,6 @@ let cors = require('cors');
    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
    next();
  });
-//  let server = http.createServer(app)
 let server = http.createServer(app);
  let io = new Server(server,{
    cors:{

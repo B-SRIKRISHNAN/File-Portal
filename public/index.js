@@ -12,23 +12,14 @@ let logs = document.getElementById('logs');
 let downloadStatus = document.getElementById("downloadStatus");
 let windowLoc = window.location.href;
 
-let url = windowLoc.substring(0,windowLoc.indexOf("/",8));// after https:// 
+let url = windowLoc.substring(0,windowLoc.indexOf("/",8));
 console.log(url);
-// "http://localhost:3000"
-// "https://cgwubiscl6.execute-api.eu-north-1.amazonaws.com"
-// "http://getting-started-app-env.eba-ibg6rqes.eu-north-1.elasticbeanstalk.com" 
-// process.env.API_ENDPOINT
 
 
-let apiUrl = url;// "https://file-portal.eu-north-1.elasticbeanstalk.com";
-// "https://g0dtkanc97.execute-api.eu-north-1.amazonaws.com/fileportal_1";
-let socketUrl =
-    // "http://getting-started-app-env.eba-ibg6rqes.eu-north-1.elasticbeanstalk.com" 
-    "wss://7fkuyllf72.execute-api.eu-north-1.amazonaws.com/production/";
-//  url;
 
-// "https://file-portal.eu-north-1.elasticbeanstalk.com";
-// "wss://1a31d2dgm6.execute-api.eu-north-1.amazonaws.com/production";
+let apiUrl = url;
+// let socketUrl = "wss://7fkuyllf72.execute-api.eu-north-1.amazonaws.com/production/";
+
 if (!reciever && !input)
     throw new Error('No valid elements found');
 
@@ -37,8 +28,9 @@ if (!reciever && !input)
 let aws_wss_url = "wss://7fkuyllf72.execute-api.eu-north-1.amazonaws.com/production/";
 let io = window.io;
 // let socket = io(socketUrl);
+
 let socket = new WebSocket(aws_wss_url);
-// (socketUrl);
+
 socket.addEventListener('open', () => {
     console.log("Connected to socket!!");
     let config = { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] }
