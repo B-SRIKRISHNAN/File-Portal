@@ -25,9 +25,10 @@ class FileSystemWriter{
 
     /**  Create a writable stream to a file in user system*/
     createWriteable = async (filename,fileType)=>{
+        console.log("fileName: "+filename+" fileType: "+fileType);
         let type = {};
         type[fileType]=[];
-
+        console.log(type);
         const fileHandle = await window.showSaveFilePicker({suggestedName:filename,types:[{accept:type}]});
         this.writeStream = await fileHandle.createWritable();    
     }

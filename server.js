@@ -2,7 +2,7 @@ let express = require('express');
 let fs = require('fs');
 let http = require('http')
 let {Server} = require('socket.io')
-let url = process.env.API_ENDPOINT
+let url = process.env.API_ENDPOINT||"http://localhost:3000"
 let crypto = require('crypto');
 let cors = require('cors');
 //"https://file-portal.eu-north-1.elasticbeanstalk.com"
@@ -67,7 +67,7 @@ app.get('/getUniqueId',(req,res)=>{
    let uniqueId = generateUniqueRoomId();
    res.send(uniqueId);
 })
- app.listen(process.env.PORT,()=>{
+ app.listen(process.env.PORT||3000,()=>{
     console.log("listening");
  });
 

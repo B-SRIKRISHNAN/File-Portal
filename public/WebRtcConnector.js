@@ -47,6 +47,7 @@ class WebRtcConnectionLocal{
     getRemoteDescription = async (printStatus)=>{
         return new Promise((res,rej)=>{
             this.signallingChannel.addEventListener('message',async message=>{
+                message = JSON.parse(message.data);
                 if(message.answer)
                 {
                     const answer = new RTCSessionDescription(message.answer);
@@ -70,6 +71,7 @@ class WebRtcConnectionLocal{
         };
 
         this.signallingChannel.addEventListener('message', async message => {
+            message = JSON.parse(message.data);
             if (message.iceCandidate) {
                 try {
                     await this.connection.addIceCandidate(message.iceCandidate);
@@ -124,6 +126,11 @@ class WebRtcConnectionRemote{
     getOfferFromRemote = async (printStatus)=>{
         return new Promise((res,rej)=>{
             this.signallingChannel.addEventListener('message',async message => {
+                console.log(message);
+                message = JSON.parse(message.data);
+                
+                // alert("receiving offer from remote");
+                
                 if(message.offer)
                 {
                     const offer = new RTCSessionDescription(message.offer);
@@ -157,6 +164,7 @@ class WebRtcConnectionRemote{
 
 
         this.signallingChannel.addEventListener('message', async message => {
+            message = JSON.parse(message.data);
             if (message.new_ice_candidate) {
                 try {
                     await this.connection.addIceCandidate(message.new_ice_candidate);
