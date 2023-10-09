@@ -130,6 +130,6 @@ dist
 .pnp.*
 
 #unused files
-server.js
+./server.js
 
 package-lock.json
