@@ -205,49 +205,76 @@ Resources:
     Properties:
       Code:
         ZipFile: |-
-          const AWS = require('aws-sdk');
-                const ddb = new AWS.DynamoDB.DocumentClient();
+              const AWS = require('aws-sdk');
+              const ddb = new AWS.DynamoDB.DocumentClient();
+            
+              exports.handler = async function (event, context) {
+                let connections;
+                let currRoomId;
+                // let currConnectionId = event.requestContext.connectionId;
+                try {
                 
-                exports.handler = async function (event, context) {
-                  let connections;
-                  try {
-                    connections = await ddb.scan({ TableName: process.env.table }).promise();
-                  } catch (err) {
-                    return {
-                      statusCode: 500,
-                    };
+                  currRoomId = JSON.parse(event.body).message.uId;
+                  console.log(currRoomId);
+                  if(currRoomId &&currRoomId!='')
+                  {
+                    
+                    
+                      connections = await ddb.scan({
+                    
+                        // FilterExpression: "roomId = :uId",
+                        // // Define the expression attribute value, which are substitutes for the values you want to compare.
+                        // ExpressionAttributeValues: {
+                        //   ":uId": {S: currRoomId}
+                        // },
+                        TableName: process.env.table 
+                    
+                      }).promise();
                   }
-                  const callbackAPI = new AWS.ApiGatewayManagementApi({
-                    apiVersion: '2018-11-29',
-                    endpoint:
-                      event.requestContext.domainName + '/' + event.requestContext.stage,
-                  });
-                
-                  const message = JSON.parse(event.body).message;
-                
-                  const sendMessages = connections.Items.map(async ({ connectionId }) => {
-                    if (connectionId !== event.requestContext.connectionId) {
-                      try {
-                        await callbackAPI
-                          .postToConnection({ ConnectionId: connectionId, Data: message })
-                          .promise();
-                      } catch (e) {
-                        console.log(e);
-                      }
-                    }
-                  });
-                
-                  try {
-                    await Promise.all(sendMessages);
-                  } catch (e) {
-                    console.log(e);
-                    return {
-                      statusCode: 500,
-                    };
+                  
+                } catch (err) {
+                  console.log("error "+err);
+                  return {
+                    statusCode: 500,
+                  };
+                }
+                const callbackAPI = new AWS.ApiGatewayManagementApi({
+                  apiVersion: '2018-11-29',
+                  endpoint:
+                    event.requestContext.domainName + '/' + event.requestContext.stage,
+                });
+              
+                const message = JSON.parse(event.body).message;
+                console.log(message);
+                console.log("Items from DB: "+JSON.stringify(connections.Items));
+                let sendMessages = [];
+                for(let i=0;i<connections.Items.length;i++)
+                {
+                  let item = connections.Items[i];
+                  let connectionId = item.connectionId;
+                  let roomId = item.roomId;
+                  console.log("connectionId: " +connectionId+" roomId: "+roomId);
+                  if (connectionId != event.requestContext.connectionId && roomId ==currRoomId) {
+                    console.log("conditions satisfied");
+                      let promiseVal = callbackAPI
+                        .postToConnection({ ConnectionId: connectionId, Data: JSON.stringify (message) })
+                        .promise(); 
+                        console.log(promiseVal);
+                      sendMessages.push(promiseVal);
                   }
-                
-                  return { statusCode: 200 };
-                };
+                }
+                console.log(sendMessages);
+                try {
+                  await Promise.all(sendMessages);
+                } catch (e) {
+                  console.log(e);
+                  return {
+                    statusCode: 500,
+                  };
+                }
+              
+                return { statusCode: 200 };
+              };
       Role:
         Fn::GetAtt:
           - SendMessageHandlerServiceRole5F523417
