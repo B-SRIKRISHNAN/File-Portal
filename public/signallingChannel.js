@@ -1,22 +1,22 @@
 class SignallingChannel {
-    sender = null;
-    reciever = null;
-    constructor(sender, reciever) {
-        this.sender = sender;
-        this.reciever = reciever;
-    }
+    // sender = null;
+    // reciever = null;
+    // constructor(sender, reciever) {
+    //     this.sender = sender;
+    //     this.reciever = reciever;
+    // }
 
     send = (messageName, message) => {
-        if (this.sender != null) {
-            this.sender(messageName, message);
-        }
+        // if (this.sender != null) {
+        //     this.sender(messageName, message);
+        // }
     }
 
     addEventListener = (messageName, messageReciever) => {
 
-        if (this.reciever != null) {
-            this.reciever(messageName, messageReciever);
-        }
+        // if (this.reciever != null) {
+        //     this.reciever(messageName, messageReciever);
+        // }
     }
 }
 
@@ -28,7 +28,7 @@ class DefaultWebSocketSignallingChannel extends SignallingChannel {
 
     socket = null;
     constructor(socket) {
-        super(null,null);
+        // super(null,null);
         this.socket = socket;
     }
 

@@ -194,15 +194,31 @@ function handleLocal(webRtcClass) {
                                 updateDownloadStatus(0);
                             })
                             channel.addEventListener('close', () => {
-                                let checkComplete = setInterval(() => {
-                                    if (sizeDownloaded >= fileSize) {
+                                console.log("received close signal");
+
+                                // let checkComplete = setInterval(() => {
+                                    console.log("closing write channel");
+                                    // if (sizeDownloaded >= fileSize) {
+                                        // console.log("Size has exceeded")
                                         fileWriterObj.closeWritableStream().then(res => {
                                             updateDownloadStatus(100);
                                             printStatus('file downloaded');
-                                            window.clearInterval(checkComplete);
+                                            // window.clearInterval(checkComplete);
                                         })
-                                    }
-                                }, 50)
+                                    // }else{
+                                    //     while(sizeDownloaded < fileSize){
+                                    //         console.log("waiting");
+                                    //         if (sizeDownloaded >= fileSize) {
+                                    //             console.log("Size has exceeded")
+                                    //             fileWriterObj.closeWritableStream().then(res => {
+                                    //                 updateDownloadStatus(100);
+                                    //                 printStatus('file downloaded');
+                                    //                 // window.clearInterval(checkComplete);
+                                    //             })
+                                    //         }
+                                    //     }
+                                    // }
+                                // }, 50)
 
                             })
                             channel.onmessage = (event) => {
@@ -385,8 +401,9 @@ function handleRemote(webRtcClass) {
 
                             if (bytePoint >= size) {
                                 // fileReader.close();
+                                console.log("CLOSING CHANNEL");
                                 sendChannel.close();
-                                signallingChannel.send('clearRoom', {})
+                                // signallingChannel.send('clearRoom', {})
                                 // sendMessage('clearRoom', {});
                             } else {
                                 chunk = file.slice(bytePoint, bytePoint + chunkSize)
@@ -398,9 +415,12 @@ function handleRemote(webRtcClass) {
                     fileReader.onload = () => {
                         // resolve(fileReader.result);
                         checkBufferSize(sendChannel).then(res => {
-                            console.log("sent");
-                            sendChannel.send(fileReader.result);
-                            bytePoint += chunkSize;
+                            if(bytePoint<=size)
+                            {
+                                console.log("sent");
+                                sendChannel.send(fileReader.result);
+                                bytePoint += chunkSize;
+                            }
                         })
 
                     }
