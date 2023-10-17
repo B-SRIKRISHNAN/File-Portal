@@ -29,6 +29,7 @@ class DefaultWebSocketSignallingChannel extends SignallingChannel {
     socket = null;
     constructor(socket) {
         // super(null,null);
+        super();
         this.socket = socket;
     }
 
