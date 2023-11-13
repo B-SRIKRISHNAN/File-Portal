@@ -10,6 +10,9 @@ TODO:
 5.) Sharing files between more than two users.
 
 
+Note:
+  The project is still under construction and may not work as intended. The resources may also be outdated. PLease cross-check and use at your own risk.
+  
 References :
 
 AWS sample lambda chat application modified to serve as a websocket.
