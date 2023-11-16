@@ -380,7 +380,7 @@ function handleRemote(webRtcClass) {
                     signallingChannel.addEventListener('message', (msg) => {
                         msg = JSON.parse(msg.data);
                         if (msg.channelCreate == true) {
-                            let fileTransferChannel = connection.createDataChannel('fileTransfer');
+                            let fileTransferChannel = connection.createDataChannel('fileTransfer',{ordered:true,});
                             fileTransferChannel.binaryType = 'arraybuffer';
                             fileTransferChannel.bufferedAmountLowThreshold = 65535;//64 kb
                             fileTransferChannel.addEventListener('open', sendData(inputFileVal, fileTransferChannel))

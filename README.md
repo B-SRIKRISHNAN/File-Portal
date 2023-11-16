@@ -1,6 +1,15 @@
 # File-Portal
 A file Transfer application, that uses web-RTC to transfer large files
 
+TODO:
+
+1.) Add a container to make versions same to benifit sharing work.
+2.) Enable a link sharing option by mail, whatsapp and QR Code.
+3.) Switch projct to angular to make dev work easier.
+4.) Add modules for video and audio streaming.
+5.) Sharing files between more than two users.
+
+
 References :
 
 AWS sample lambda chat application modified to serve as a websocket.
