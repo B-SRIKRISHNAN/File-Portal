@@ -1,10 +1,5 @@
 # File-Portal
 A file Transfer application, that uses web-RTC to transfer large files
-<<<<<<< HEAD
-TODO:
-
-=======
->>>>>>> 2518e3e9b0a103dab18fc7cedb2c8dedcfe934f5
 TODO:
 1.) Add a container to make versions same to benifit sharing work.
 2.) Enable a link sharing option by mail, whatsapp and QR Code.
