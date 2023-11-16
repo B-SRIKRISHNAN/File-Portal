@@ -30,4 +30,4 @@ AWS sample lambda chat application modified to serve as a websocket.
 
 
 WebRtc Sample reference
--  https://github.com/webrtc/samples/tree/gh-pages/src/content/datachannel/channel
+-  https://github.com/webrtc/samples/tree/gh-pages/src/content/datachannel/channel 
