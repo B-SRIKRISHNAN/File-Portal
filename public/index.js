@@ -393,7 +393,7 @@ function handleRemote(webRtcClass) {
                         if (msg.channelCreate == true) {
                             let fileTransferChannel = connection.createDataChannel('fileTransfer',{ordered:true});
                             fileTransferChannel.binaryType = 'arraybuffer';
-                            fileTransferChannel.bufferedAmountLowThreshold =64000//65535;//64 kb
+                            fileTransferChannel.bufferedAmountLowThreshold =32000//65535;//64 kb
                             fileTransferChannel.addEventListener('open', sendData(inputFileVal, fileTransferChannel))
 
                         }
@@ -408,7 +408,7 @@ function handleRemote(webRtcClass) {
                         // event.returnValue =  window.confirm("This will stop the file transfer process permenantly. Do you wish to continue?")
                     }
                     let bytePoint = 0;
-                    let chunkSize = 64000;
+                    let chunkSize = 32000;
                     let size = file.size;
                     let chunk = file.slice(bytePoint, bytePoint + chunkSize);
                     sendChannel.onmessage = (event) => {
