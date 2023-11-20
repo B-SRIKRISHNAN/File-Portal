@@ -262,7 +262,7 @@ function handleLocal(webRtcClass) {
                 // {
                 //     reconnectAttempts = 5;
                 // }else 
-                if(localConnection.connectionState=='disconnected' && reconnectAttempts>0)
+                if((localConnection.connectionState=='disconnected'||localConnection.connectionState=='failed'))
                 {
                     localConnection.sendConnection(()=>{console.log("Connection Reestablished")}, printStatus);
                     // reconnectAttempts--;
