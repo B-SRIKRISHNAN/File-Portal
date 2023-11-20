@@ -150,7 +150,7 @@ function handleLocal(webRtcClass) {
         let fileWriterObj = null;
 
         async function createFileWriter() {
-            let fileClass = await import('./fileWriter.mjs');
+            let fileClass = await import('./fileWriter.js');
             fileWriterObj = fileClass.getFileWriterObj();
             console.log(fileWriterObj)
         }
@@ -256,7 +256,18 @@ function handleLocal(webRtcClass) {
                 }
             }
 
-
+            // let reconnectAttempts = 5;
+            localConnection.onconnectionstatechange=(event)=>{
+                // if(localConnection.connectionState=='connected')
+                // {
+                //     reconnectAttempts = 5;
+                // }else 
+                if((localConnection.connectionState=='disconnected'||localConnection.connectionState=='failed'))
+                {
+                    localConnection.sendConnection(()=>{console.log("Connection Reestablished")}, printStatus);
+                    // reconnectAttempts--;
+                }
+            }
 
         }
     });
@@ -380,7 +391,7 @@ function handleRemote(webRtcClass) {
                     signallingChannel.addEventListener('message', (msg) => {
                         msg = JSON.parse(msg.data);
                         if (msg.channelCreate == true) {
-                            let fileTransferChannel = connection.createDataChannel('fileTransfer',{ordered:true,});
+                            let fileTransferChannel = connection.createDataChannel('fileTransfer',{ordered:true});
                             fileTransferChannel.binaryType = 'arraybuffer';
                             fileTransferChannel.bufferedAmountLowThreshold = 65535;//64 kb
                             fileTransferChannel.addEventListener('open', sendData(inputFileVal, fileTransferChannel))
@@ -392,6 +403,10 @@ function handleRemote(webRtcClass) {
 
 
                 async function sendData(file, sendChannel) {
+                    window.onbeforeunload=(event)=>{
+                        event.preventDefault();
+                        // event.returnValue =  window.confirm("This will stop the file transfer process permenantly. Do you wish to continue?")
+                    }
                     let bytePoint = 0;
                     let chunkSize = 16000;
                     let size = file.size;

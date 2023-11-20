@@ -139,7 +139,7 @@ class WebRtcConnectionRemote {
                 console.log(message);
                 message = JSON.parse(message.data);
 
-                alert("receiving offer from remote");
+                // alert("receiving offer from remote");
 
                 if (message.offer) {
                     const offer = new RTCSessionDescription(message.offer);
