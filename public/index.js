@@ -150,7 +150,7 @@ function handleLocal(webRtcClass) {
         let fileWriterObj = null;
 
         async function createFileWriter() {
-            let fileClass = await import('./fileWriter.mjs');
+            let fileClass = await import('./fileWriter.js');
             fileWriterObj = fileClass.getFileWriterObj();
             console.log(fileWriterObj)
         }
