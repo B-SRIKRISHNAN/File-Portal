@@ -10,7 +10,7 @@ TODO:
 
 Note:
   The project is still under construction and may not work as intended. The resources may also be outdated. PLease cross-check and use at your own risk.
-  Contributors can use the reference section.
+  Contributors can use the reference section to gain a better understanding of underlying technologies.
 
 1.) Add a container to make versions same to benifit sharing work.
 2.) Enable a link sharing option by mail, whatsapp and QR Code.
