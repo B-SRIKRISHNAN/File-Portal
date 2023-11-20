@@ -257,17 +257,17 @@ function handleLocal(webRtcClass) {
             }
 
             // let reconnectAttempts = 5;
-            localConnection.onconnectionstatechange=(event)=>{
-                // if(localConnection.connectionState=='connected')
-                // {
-                //     reconnectAttempts = 5;
-                // }else 
-                if((localConnection.connectionState=='disconnected'||localConnection.connectionState=='failed'))
-                {
-                    localConnection.sendConnection(()=>{console.log("Connection Reestablished")}, printStatus);
-                    // reconnectAttempts--;
-                }
-            }
+            // localConnection.onconnectionstatechange=(event)=>{
+            //     // if(localConnection.connectionState=='connected')
+            //     // {
+            //     //     reconnectAttempts = 5;
+            //     // }else 
+            //     if((localConnection.connectionState=='disconnected'||localConnection.connectionState=='failed'))
+            //     {
+            //         localConnection.sendConnection(()=>{console.log("Connection Reestablished")}, printStatus);
+            //         // reconnectAttempts--;
+            //     }
+            // }
 
         }
     });
