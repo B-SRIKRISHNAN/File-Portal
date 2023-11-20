@@ -403,6 +403,10 @@ function handleRemote(webRtcClass) {
 
 
                 async function sendData(file, sendChannel) {
+                    window.onbeforeunload=(event)=>{
+                        event.preventDefault();
+                        // event.returnValue =  window.confirm("This will stop the file transfer process permenantly. Do you wish to continue?")
+                    }
                     let bytePoint = 0;
                     let chunkSize = 16000;
                     let size = file.size;
