@@ -343,7 +343,7 @@ function handleRemote(webRtcClass) {
     let fileReader = new FileReader();
     let inputFileVal = null;
     let remoteConnection = null;
-    let chunkSize = 16000;
+    let chunkSize = 32000;
 
     linkGenerator.onclick = () => {
         if (input.files[0]) {
