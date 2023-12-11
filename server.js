@@ -6,7 +6,9 @@ let url = process.env.API_ENDPOINT||"http://localhost:3000"
 let crypto = require('crypto');
 let cors = require('cors');
  let app = express();
- app.use(express.static('public'));
+//  app.use(express.static('public'));
+ app.use(express.static('dist'));
+
 //  app.use(cors());
  app.use(function(req, res, next) {
    res.header("Access-Control-Allow-Origin", "*");
@@ -49,15 +51,21 @@ let server = http.createServer(app);
  })
 
  app.get('/welcome',(req,res)=>{
-    let html = fs.readFileSync('./index.html');
+    let html = fs.readFileSync('./dist/index.html');
     res.contentType('html');
     res.send(html);
     });
 
 app.get('/getFile',(req,res)=>{
-    let html = fs.readFileSync('./Reciever.html');
+    let html = fs.readFileSync('./dist/Reciever.html');
     res.contentType('html');
     res.send(html);
+});
+
+app.get('/dist/bundle.js',(req,res)=>{
+   let bundle = fs.readFileSync('./dist/bundle.js');
+   res.contentType('text/javascript');
+   res.send(bundle);
 });
 
 app.get('/getUniqueId',(req,res)=>{

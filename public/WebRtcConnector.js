@@ -200,7 +200,9 @@ class WebRtcConnectionRemote {
     }
 }
 
-export function getWebRtcConnectionRemote(config, signallingChannel) {
-    let remoteConnection = new WebRtcConnectionRemote(config, signallingChannel)
-    return remoteConnection;
-}
+export {WebRtcConnectionLocal,WebRtcConnectionRemote};
+
+// export function getWebRtcConnectionRemote(config, signallingChannel) {
+//     let remoteConnection = new WebRtcConnectionRemote(config, signallingChannel)
+//     return remoteConnection;
+// }

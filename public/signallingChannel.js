@@ -27,19 +27,23 @@ class SignallingChannel {
 class DefaultWebSocketSignallingChannel extends SignallingChannel {
 
     socket = null;
+    uId = null;
     constructor(socket) {
         // super(null,null);
         super();
         this.socket = socket;
     }
+    setUId = (uId)=>{
+        this.uId = uId;
+    }
 
     send = (messageName, message) => {
         if (this.socket.readyState === this.socket.OPEN) {
-            if (uId != null)// only if we have joined room, we can send message
+            if (this.uId != null)// only if we have joined room, we can send message
             {
-                message['uId'] = uId;
+                message['uId'] = this.uId;
                 console.log(message);
-                socket.send("{\"action\":" + "\"" + messageName + "\"" + ",\"message\":" + JSON.stringify(message) + "}");
+                this.socket.send("{\"action\":" + "\"" + messageName + "\"" + ",\"message\":" + JSON.stringify(message) + "}");
             }
         }
     }
@@ -47,13 +51,14 @@ class DefaultWebSocketSignallingChannel extends SignallingChannel {
     addEventListener = (messageName, doOnMessage) => {
         if (this.socket.readyState === this.socket.OPEN) {
             this.socket.removeEventListener(messageName, doOnMessage);
-            socket.addEventListener(messageName, doOnMessage);
+            this.socket.addEventListener(messageName, doOnMessage);
         }
     }
 
 
 }
+export {SignallingChannel, DefaultWebSocketSignallingChannel};
 
-export function getDefaultWebSocketSignallingChannel(socket) {
-    return new DefaultWebSocketSignallingChannel(socket);
-}
+// export function getDefaultWebSocketSignallingChannel(socket) {
+//     return new DefaultWebSocketSignallingChannel(socket);
+// }

@@ -33,11 +33,12 @@ class FileSystemWriter{
         this.writeStream = await fileHandle.createWritable();    
     }
 }
+export {FileSystemWriter};
 
-export function getFileWriterObj()
-{
-    let fileSystemWriter = new FileSystemWriter();
-    return fileSystemWriter;
-}
+// export function getFileWriterObj()
+// {
+//     let fileSystemWriter = new FileSystemWriter();
+//     return fileSystemWriter;
+// }
 
     

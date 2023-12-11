@@ -2,6 +2,10 @@
 // Local is one who downloads the file, Remote is the one who recieves the file
 
 // const { WebSocket } = require('ws');
+// import { crypto } from 'crypto';
+import { FileSystemWriter } from './fileWriter.js';
+import { WebRtcConnectionLocal, WebRtcConnectionRemote } from './WebRtcConnector.js';
+import { SignallingChannel, DefaultWebSocketSignallingChannel } from './signallingChannel.js';
 
 let input = document.getElementById('fileInput');
 let downloadFile = document.getElementById('downloadFile');
@@ -36,25 +40,28 @@ let socket = null;
 
 let uId = '';
 
-let signalClass = null;
+// let signalClass = null;
 let signallingChannel = null;
 
-let createSignalClass = async () => {
-    signalClass = await import('./signallingChannel.js');
-}
+// let createSignalClass = async () => {
+//     signalClass = await import('./signallingChannel.js');
+// }
 
-let webRtcClass = null;
-import('./WebRtcConnector.js').then(webRtc => {
-    webRtcClass = webRtc;
-    createSignalClass().then(res => {
-        if (reciever) {
-            handleLocal(webRtcClass);
-        }
-        if (input) {
-            handleRemote(webRtcClass);
-        }
-    });
-});
+// let webRtcClass = null;
+// import('./WebRtcConnector.js').then(webRtc => {
+// webRtcClass = webRtc;
+// createSignalClass().then(res => {
+if (reciever) {
+    // handleLocal(webRtcClass);
+    handleLocal();
+
+}
+if (input) {
+    // handleRemote(webRtcClass);
+    handleRemote();
+}
+// });
+// });
 
 
 // Commented to reorganise code!!
@@ -129,7 +136,8 @@ import('./WebRtcConnector.js').then(webRtc => {
 // Commented to reorganise code
 
 /**Handles the case of the downloading person */
-function handleLocal(webRtcClass) {
+// function handleLocal(webRtcClass) {
+function handleLocal() {
 
 
     // function updateDownloadStatus(val) {
@@ -140,19 +148,23 @@ function handleLocal(webRtcClass) {
     socket = new WebSocket(aws_wss_url);
     socket.addEventListener('open', () => {
 
-        if (!signalClass || signalClass == null)
-            return;
+        // if (!signalClass || signalClass == null)
+        //     return;
 
-        signallingChannel = signalClass.getDefaultWebSocketSignallingChannel(socket);
-        let localConnection = webRtcClass.getWebRtcConnectionLocal(config, signallingChannel);
+        // signallingChannel = signalClass.getDefaultWebSocketSignallingChannel(socket);
+        signallingChannel = new DefaultWebSocketSignallingChannel(socket);
+        // let localConnection = webRtcClass.getWebRtcConnectionLocal(config, signallingChannel);
+        let localConnection = new WebRtcConnectionLocal(config, signallingChannel);
+
         console.log(localConnection);
 
         let fileWriterObj = null;
 
         async function createFileWriter() {
-            let fileClass = await import('./fileWriter.js');
-            fileWriterObj = fileClass.getFileWriterObj();
-            console.log(fileWriterObj)
+            // let fileClass = await import('./fileWriter.js');
+            fileWriterObj = new FileSystemWriter();
+            // fileClass.getFileWriterObj();
+            console.log(fileWriterObj);
         }
 
         // uId = window.location.href.split("?")[1].split("&")[0].split("=")[1];
@@ -163,6 +175,7 @@ function handleLocal(webRtcClass) {
 
             uId = window.location.href.split("?")[1].split("&")[0].split("=")[1];
             // sendMessage('join', {})
+            signallingChannel.setUId(uId);
             signallingChannel.send('join', {});
 
             function updateDownloadStatus(val) {
@@ -197,27 +210,27 @@ function handleLocal(webRtcClass) {
                                 console.log("received close signal");
 
                                 // let checkComplete = setInterval(() => {
-                                    console.log("closing write channel");
-                                    // if (sizeDownloaded >= fileSize) {
-                                        // console.log("Size has exceeded")
-                                        fileWriterObj.closeWritableStream().then(res => {
-                                            updateDownloadStatus(100);
-                                            printStatus('file downloaded');
-                                            // window.clearInterval(checkComplete);
-                                        })
-                                    // }else{
-                                    //     while(sizeDownloaded < fileSize){
-                                    //         console.log("waiting");
-                                    //         if (sizeDownloaded >= fileSize) {
-                                    //             console.log("Size has exceeded")
-                                    //             fileWriterObj.closeWritableStream().then(res => {
-                                    //                 updateDownloadStatus(100);
-                                    //                 printStatus('file downloaded');
-                                    //                 // window.clearInterval(checkComplete);
-                                    //             })
-                                    //         }
-                                    //     }
-                                    // }
+                                console.log("closing write channel");
+                                // if (sizeDownloaded >= fileSize) {
+                                // console.log("Size has exceeded")
+                                fileWriterObj.closeWritableStream().then(res => {
+                                    updateDownloadStatus(100);
+                                    printStatus('file downloaded');
+                                    // window.clearInterval(checkComplete);
+                                })
+                                // }else{
+                                //     while(sizeDownloaded < fileSize){
+                                //         console.log("waiting");
+                                //         if (sizeDownloaded >= fileSize) {
+                                //             console.log("Size has exceeded")
+                                //             fileWriterObj.closeWritableStream().then(res => {
+                                //                 updateDownloadStatus(100);
+                                //                 printStatus('file downloaded');
+                                //                 // window.clearInterval(checkComplete);
+                                //             })
+                                //         }
+                                //     }
+                                // }
                                 // }, 50)
 
                             })
@@ -338,7 +351,8 @@ function handleLocal(webRtcClass) {
 }
 // }
 /**Handles the case of the uploading person */
-function handleRemote(webRtcClass) {
+// function handleRemote(webRtcClass) {
+function handleRemote() {
 
     let fileReader = new FileReader();
     let inputFileVal = null;
@@ -347,25 +361,30 @@ function handleRemote(webRtcClass) {
 
     linkGenerator.onclick = () => {
         if (input.files[0]) {
+            console.log("Connecting to websocket")
             socket = new WebSocket(aws_wss_url);
             socket.addEventListener('open', () => {
+                console.log("connected to remote websocket server");
+                // if (!signalClass || signalClass == null)
+                //     return;
 
-                if (!signalClass || signalClass == null)
-                    return;
-
-                signallingChannel = signalClass.getDefaultWebSocketSignallingChannel(socket);
+                // signallingChannel = signalClass.getDefaultWebSocketSignallingChannel(socket);
+                signallingChannel = new DefaultWebSocketSignallingChannel(socket);
                 uId = crypto.randomUUID();
                 // getUniqueLink().then(res => {
                 link.innerHTML = '<a href="' + apiUrl + '/getFile?uId=' + uId + '" target="blank">' + apiUrl + '/getFile?uId=' + uId + '</a>';
                 // uId = res;
                 // sendMessage('join', {});
+                signallingChannel.setUId(uId);
                 signallingChannel.send('join', {});
 
                 inputFileVal = input.files[0];
                 if (inputFileVal != null) {
                     console.log(inputFileVal);
 
-                    remoteConnection = webRtcClass.getWebRtcConnectionRemote(config, signallingChannel);
+                    // remoteConnection = webRtcClass.getWebRtcConnectionRemote(config, signallingChannel);
+                    remoteConnection = new WebRtcConnectionRemote(config, signallingChannel);
+
                     console.log(remoteConnection);
 
                     if (remoteConnection != null) {
@@ -391,9 +410,9 @@ function handleRemote(webRtcClass) {
                     signallingChannel.addEventListener('message', (msg) => {
                         msg = JSON.parse(msg.data);
                         if (msg.channelCreate == true) {
-                            let fileTransferChannel = connection.createDataChannel('fileTransfer',{ordered:true});
+                            let fileTransferChannel = connection.createDataChannel('fileTransfer', { ordered: true });
                             fileTransferChannel.binaryType = 'arraybuffer';
-                            fileTransferChannel.bufferedAmountLowThreshold =32000//65535;//64 kb
+                            fileTransferChannel.bufferedAmountLowThreshold = 32000//65535;//64 kb
                             fileTransferChannel.addEventListener('open', sendData(inputFileVal, fileTransferChannel))
 
                         }
@@ -403,7 +422,7 @@ function handleRemote(webRtcClass) {
 
 
                 async function sendData(file, sendChannel) {
-                    window.onbeforeunload=(event)=>{
+                    window.onbeforeunload = (event) => {
                         event.preventDefault();
                         // event.returnValue =  window.confirm("This will stop the file transfer process permenantly. Do you wish to continue?")
                     }
@@ -430,8 +449,7 @@ function handleRemote(webRtcClass) {
                     fileReader.onload = () => {
                         // resolve(fileReader.result);
                         checkBufferSize(sendChannel).then(res => {
-                            if(bytePoint<=size)
-                            {
+                            if (bytePoint <= size) {
                                 console.log("sent");
                                 sendChannel.send(fileReader.result);
                                 bytePoint += chunkSize;
