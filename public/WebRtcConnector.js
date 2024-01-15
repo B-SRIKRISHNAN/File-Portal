@@ -16,7 +16,7 @@ class WebRtcConnectionLocal {
 
         this.sendLocalDescToRemote(printStatus).then(() => {
             this.getRemoteDescription(printStatus).then(res => {
-                // this.establishICLocal(printStatus)
+                this.establishICLocal(printStatus)
                 this.checkConnectionEstablished(onConnectionEstablishedLocal, printStatus);
             })
 
@@ -125,7 +125,7 @@ class WebRtcConnectionRemote {
     recieveConnection = async (onConnectionEstablishedRemote, printStatus) => {
 
         this.getOfferFromRemote(printStatus).then(val => {
-            // this.establishICRemote(printStatus);
+            this.establishICRemote(printStatus);
             this.checkConnectionEstablished(onConnectionEstablishedRemote, printStatus);
         })
 
@@ -166,11 +166,9 @@ class WebRtcConnectionRemote {
             console.log('ice candidate found');
             console.log(event.candidate);
             console.log("ice Gathering status:" + this.connection.iceGatheringState);
-            if (event.candidate && event.iceCandidate != null) {
+            if (event.candidate) {
                 this.signallingChannel.send('message', { 'iceCandidate': event.candidate });
                 printStatus('sending ice candidate to local')
-            } else if (this.connection.iceGatheringState != 'connected') {
-
             }
         });
 
