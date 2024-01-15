@@ -6,7 +6,8 @@
 import { FileSystemWriter } from './fileWriter.js';
 import { WebRtcConnectionLocal, WebRtcConnectionRemote } from './WebRtcConnector.js';
 import { SignallingChannel, DefaultWebSocketSignallingChannel } from './signallingChannel.js';
-
+// import {  } from './Pipeline.js';
+import { Stream } from 'stream';
 let input = document.getElementById('fileInput');
 let downloadFile = document.getElementById('downloadFile');
 let reciever = document.getElementById("reciever");
@@ -89,7 +90,6 @@ function handleLocal() {
             function onConnectionEstablishedLocal(connection) {
                 printStatus('hello local');
 
-
                 signallingChannel.addEventListener('message', (msg) => {
                     console.log(msg);
                     msg = JSON.parse(msg.data);
@@ -97,7 +97,25 @@ function handleLocal() {
                     let fileSize = msg.size;
                     let sizeDownloaded = 0;
                     let chunkSize = msg.chunkSize;
+
+                    // let queue = new Queue(1000);
+                    // let buffer = new ArrayBuffer(1000);
+                    // let byteBuffer = new Uint32Array(buffer);
+                    // let shouldWrite = false;
+
+
+
                     createWriteLocation(msg.name, msg.type).then(res => {
+
+                        let readable = new Stream.Readable({ read() { console.log("Starting:: ") }, objectMode: true, highWaterMark: 100 });
+                        let writable = new Stream.Writable({
+                            write(chunk, encoding, callback) {
+
+                                writeChunkToFile(chunk).then(callback());
+                            }, objectMode: true
+                        });
+                        readable.pipe(writable);
+
 
                         connection.addEventListener('datachannel', (event) => {
                             let channel = event.channel;
@@ -107,25 +125,151 @@ function handleLocal() {
                             })
                             channel.addEventListener('close', () => {
                                 console.log("received close signal");
-
-                                console.log("closing write channel");
+                                // clearInterval(interval);
+                                // shouldWrite = false;
+                                // console.log("closing write channel");
+                                readable.push(null);
                                 fileWriterObj.closeWritableStream().then(res => {
                                     updateDownloadStatus(100);
                                     printStatus('file downloaded');
                                 })
-                            })
+                            });
+
+                            let messageReceived = false;
+                            let attempts = 0;
+                            let max_attempts = 10;
+                            // let pushToQueue = (data) => {
+                            //     console.log("Pushing to queue");
+                            //     try {
+                            //         attempts++;
+                            //         // queue.push(data);
+                            //         // console.log("current queue size: " + queue.getCurrentSize());
+                            //         let num = byteBuffer.byte;
+                            //         byteBuffer.set(data,num-1);
+                            //         console.log("current buffer size: " + byteBuffer.byteLength);
+                            //         attempts = 0;
+                            //         channel.send({ 'ok': true });
+
+                            //     } catch (e) {
+                            //         console.log("Error pushing to queue");
+                            //         if (attempts <= max_attempts) {
+                            //             pushToQueue(data);
+                            //         } else {
+                            //             // setTimeout(() => {
+                            //             //     console.log("resetting attempts");
+                            //             //     attempts = 0;
+                            //             //     pushToQueue(data);
+                            //             // }, 100)
+                            //             channel.close();
+                            //             // send({ 'ok': false, 'message': 'data cannot be pushed to queue' });
+                            //         }
+                            //     }
+
+                            // };
                             channel.onmessage = (event) => {
-                                fileWriterObj.writeToFile(event.data).then(res => {
-                                    sizeDownloaded += chunkSize;
-                                    if (sizeDownloaded > fileSize)
-                                        sizeDownloaded = fileSize;
-                                    updateDownloadStatus((sizeDownloaded / fileSize) * 100);
-                                    channel.send({ 'ok': true })
-                                })
+                                console.log("received.");
+                                let isMarkReached = readable.push(event.data);
+                                if(isMarkReached)
+                                {
+                                    channel.send({ 'ok': true });
+                                }else{
+                                    setTimeout(()=>{
+                                        channel.send({ 'ok': true });
+                                    },1000)
+                                }
+                                // if (!messageReceived) {
+                                //     messageReceived = true;
+                                //     shouldWrite = true;
+                                //     setTimeout(()=>{ initReaderAndWriter().then(val=>{console.log(val)});},50)
+
+                                // }
+
+                                // pushToQueue(event.data)
+
+                                // fileWriterObj.writeToFile(event.data).then(res => {
+                                //     sizeDownloaded += chunkSize;
+                                //     if (sizeDownloaded > fileSize)
+                                //         sizeDownloaded = fileSize;
+                                //     updateDownloadStatus((sizeDownloaded / fileSize) * 100);
+                                //     channel.send({ 'ok': true })
+                                // })
 
                             }
+
+                            // let initReaderAndWriter = async () => {
+                            //     // let retry = 10;
+                            //     // let tries = 0;
+                            //     return new Promise(async (res,rej)=>{
+                            //         console.log("INIT WRITE: " + shouldWrite);
+                            //         while (true) {
+
+                            //             if (shouldWrite) {
+                            //                 // if (queue.getCurrentSize()>0) {
+                            //                 if(byteBuffer.byteLength>0){
+                            //                     try {
+                            //                         console.log("Attempting to get data");
+                            //                         let data = byteBuffer.at(0);
+                            //                         byteBuffer = byteBuffer.slice(1,byteBuffer.byteLength-1);
+                            //                         //  queue.get();
+                            //                         await writeChunkToFile(new Blob(data));
+                            //                     } catch (e) {
+                            //                         console.log("Error init: " + e.message);
+                            //                     }
+                            //                 }else{
+                            //                     console.log("queue is empty, retrying");
+                            //                 }
+                            //             } else {
+                            //                 break;
+                            //             }
+                            //         }
+                            //         res("Completed write");
+                            //     });
+
+                            // let interval = setInterval(()=>{
+                            //     console.log("Running interval!!!");
+                            //     if(shouldWrite || queue.getCurrentSize()>0){
+                            //         try{
+                            //             console.log("Attempting to get data");
+                            //             let data = queue.get();
+                            //             writeChunkToFile(new Blob(data));
+                            //         }catch(e){
+                            //             console.log("Error init: "+e.message);
+                            //         }
+                            //     }else{
+                            //         console.log("Clearing interval");
+                            //         clearInterval(interval);
+                            //     }
+                            // },5);
+                            // while((shouldWrite || queue.getCurrentSize()>0)&&(tries<=retry)){
+                            //     try{                 
+                            //         console.log("Attempting Write");                   
+                            //         await writeChunkToFile(queue.get());
+                            //         tries = 0;
+                            //     }catch(e){
+                            //         console.log("error writing chunk!!!: "+e.message);
+                            //         // console.error(e);
+                            //         tries++;
+                            //     }
+                            // }
+                            // }
+
+
                         })
+
                         signallingChannel.send('message', { 'channelCreate': true });
+
+                        let writeChunkToFile = async (chunk) => {
+                            // return new Promise((res,rej)=>{
+                            console.log("Writing to file");
+                            await fileWriterObj.writeToFile(chunk)
+                            // .then(res => {
+                            sizeDownloaded += chunkSize;
+                            if (sizeDownloaded > fileSize)
+                                sizeDownloaded = fileSize;
+                            updateDownloadStatus((sizeDownloaded / fileSize) * 100);
+                            // });
+                            // })
+                        }
                     }).catch(error => {
                         console.log("error: " + error);
                     });
@@ -147,25 +291,25 @@ function handleLocal() {
                     })
                 }
             }
-
+            // This is experimental code
             let reconnectAttempts = 5;
-            localConnection.connection.oniceconnectionstatechange=(event)=>{
+            localConnection.connection.oniceconnectionstatechange = (event) => {
                 // if(localConnection.connectionState=='connected')
                 // {
                 //     reconnectAttempts = 5;
                 // }else 
-                if((localConnection.connection.iceconnectionState=='failed'))
-                {
-                        localConnection.connection.restartIce();
+                if ((localConnection.connection.iceconnectionState == 'failed')) {
+                    localConnection.connection.restartIce();
                     // localConnection.sendConnection(()=>{console.log("Connection Reestablished")}, printStatus);
                     // reconnectAttempts--;
                 }
             }
+            // This is experimental code
 
         }
     });
 
-    
+
 }
 
 /**Handles the case of the uploading person */
@@ -182,7 +326,7 @@ function handleRemote() {
             socket = new WebSocket(aws_wss_url);
             socket.addEventListener('open', () => {
                 console.log("connected to remote websocket server");
-            
+
                 signallingChannel = new DefaultWebSocketSignallingChannel(socket);
                 uId = crypto.randomUUID();
                 link.innerHTML = '<a href="' + apiUrl + '/getFile?uId=' + uId + '" target="blank">' + apiUrl + '/getFile?uId=' + uId + '</a>';

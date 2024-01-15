@@ -62,17 +62,17 @@ app.get('/getFile',(req,res)=>{
     res.send(html);
 });
 
-app.get('/dist/bundle.js',(req,res)=>{
-   let bundle = fs.readFileSync('./dist/bundle.js');
+app.get('/main.js',(req,res)=>{
+   let bundle = fs.readFileSync('./dist/main.js');
    res.contentType('text/javascript');
    res.send(bundle);
 });
 
-app.get('/getUniqueId',(req,res)=>{
+// app.get('/getUniqueId',(req,res)=>{
 
-   let uniqueId = generateUniqueRoomId();
-   res.send(uniqueId);
-})
+//    let uniqueId = generateUniqueRoomId();
+//    res.send(uniqueId);
+// })
  app.listen(process.env.PORT||3000,()=>{
     console.log("listening");
  });
