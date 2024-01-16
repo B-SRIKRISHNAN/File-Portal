@@ -99,7 +99,7 @@ function handleLocal() {
 
                     createWriteLocation(msg.name, msg.type).then(res => {
 
-                        let readable = new Stream.Readable({ read() { console.log("Reading from source...") }, objectMode: true, highWaterMark: 100 });
+                        let readable = new Stream.Readable({ read() { console.log("Reading from source...") }, objectMode: true, highWaterMark: 1000 });
                         let writable = new Stream.Writable({
                             write(chunk, encoding, callback) {
                                 writeChunkToFile(chunk).then(callback());
@@ -258,7 +258,7 @@ function handleRemote() {
                         // event.returnValue =  window.confirm("This will stop the file transfer process permenantly. Do you wish to continue?")
                     }
                     let bytePoint = 0;
-                    let chunkSize = 32000;
+                    let chunkSize = 64000;
                     let size = file.size;
                     let chunk = file.slice(bytePoint, bytePoint + chunkSize);
                     sendChannel.onmessage = (event) => {
