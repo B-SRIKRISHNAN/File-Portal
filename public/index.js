@@ -23,9 +23,19 @@ let apiUrl = url;
 if (!reciever && !input)
     throw new Error('No valid elements found');
 
-let aws_wss_url = "wss://7fkuyllf72.execute-api.eu-north-1.amazonaws.com/production/";
+let aws_wss_url = "ws://localhost:3000";
+// "wss://7fkuyllf72.execute-api.eu-north-1.amazonaws.com/production/";
 
-let config = { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] }
+let config = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    }
+  ]
+}
 
 function printStatus(status) {
     console.log("status " + status);
@@ -92,6 +102,7 @@ function handleLocal() {
                 signallingChannel.addEventListener('message', (msg) => {
                     console.log(msg);
                     msg = JSON.parse(msg.data);
+                    msg = msg.message;
                     console.log(msg);
                     let fileSize = msg.size;
                     let sizeDownloaded = 0;
@@ -132,13 +143,21 @@ function handleLocal() {
 
                             channel.onmessage = (event) => {
                                 console.log("received.");
+                                if(event.data.wait)
+                                {
+                                    console.log("wait event");
+                                    return;
+                                }
                                 let isMarkReached = readable.push(event.data);
                                 if(isMarkReached)
                                 {
-                                    channel.send({ 'ok': true });
+                                //   channel.send({ 'ok': true });
+                                  channel.send({ 'wait': '1' });
                                 }else{
+                                    console.log("waiting");
                                     setTimeout(()=>{
-                                        channel.send({ 'ok': true });
+                                        // channel.send({ 'ok': true });
+                                        channel.send({ 'wait': '0'});
                                     },1000)
                                 }
                             }
@@ -150,6 +169,7 @@ function handleLocal() {
                             console.log("Writing to file");
                             await fileWriterObj.writeToFile(chunk)
                             sizeDownloaded += chunkSize;
+                            console.log("Written chunk " + (sizeDownloaded / chunkSize) + "to file");
                             if (sizeDownloaded > fileSize)
                                 sizeDownloaded = fileSize;
                             updateDownloadStatus((sizeDownloaded / fileSize) * 100);
@@ -180,8 +200,8 @@ function handleLocal() {
             localConnection.connection.oniceconnectionstatechange = (event) => {
                 // if ((localConnection.connection.iceconnectionState == 'failed')) {
                 //     localConnection.connection.restartIce();
-                    // localConnection.sendConnection(()=>{console.log("Connection Reestablished")}, printStatus);
-                    // reconnectAttempts--;
+                // localConnection.sendConnection(()=>{console.log("Connection Reestablished")}, printStatus);
+                // reconnectAttempts--;
                 // }
             }
             // This is experimental code
@@ -240,6 +260,7 @@ function handleRemote() {
 
                     signallingChannel.addEventListener('message', (msg) => {
                         msg = JSON.parse(msg.data);
+                        msg = msg.message;
                         if (msg.channelCreate == true) {
                             let fileTransferChannel = connection.createDataChannel('fileTransfer', { ordered: true });
                             fileTransferChannel.binaryType = 'arraybuffer';
@@ -257,6 +278,7 @@ function handleRemote() {
                         event.preventDefault();
                         // event.returnValue =  window.confirm("This will stop the file transfer process permenantly. Do you wish to continue?")
                     }
+                    let shouldWait = false;
                     let bytePoint = 0;
                     let chunkSize = 64000;
                     let size = file.size;
@@ -264,33 +286,66 @@ function handleRemote() {
                     sendChannel.onmessage = (event) => {
                         if (event.data) {
 
-                            if (bytePoint >= size) {
-                                // fileReader.close();
-                                console.log("CLOSING CHANNEL");
-                                sendChannel.close();
-                                // signallingChannel.send('clearRoom', {})
-                                // sendMessage('clearRoom', {});
-                            } else {
-                                chunk = file.slice(bytePoint, bytePoint + chunkSize)
-                                readFileData(chunk);
+                            if (event.data.wait == 1) {
+                                shouldWait = true;
+                            } else if (event.data.wait == 0) {
+                                shouldWait = false;
+                                readNextChunk();
                             }
+
+
+
+                            // if (!shouldWait) {
+                            //     chunk = file.slice(bytePoint, bytePoint + chunkSize)
+                            //     readFileData(chunk);
+                            // }
+                            // if (bytePoint >= size) {    
+                            //     // fileReader.close();
+                            //     console.log("CLOSING CHANNEL");
+                            //     sendChannel.close();
+                            //     // signallingChannel.send('clearRoom', {})
+                            //     // sendMessage('clearRoom', {});
+                            // } else {
+                            //     chunk = file.slice(bytePoint, bytePoint + chunkSize)
+                            //     readFileData(chunk);
+                            // }
 
                         }
                     }
-                    fileReader.onload = () => {
-                        checkBufferSize(sendChannel).then(res => {
-                            if (bytePoint <= size) {
-                                console.log("sent");
-                                sendChannel.send(fileReader.result);
-                                bytePoint += chunkSize;
-                            }
-                        })
+                    fileReader.onload = async () => {
 
+                        await checkBufferSize(sendChannel)
+
+                        if (bytePoint <= size) {
+                            console.log("sent");
+                            sendChannel.send(fileReader.result);
+                            bytePoint += chunkSize;
+                        }
+                        if (!shouldWait) {
+                            readNextChunk();
+                        }
                     }
-                    readFileData(chunk);
+
+                    function readNextChunk() {
+                        if (bytePoint < size) {
+                            console.log("sending");
+                            chunk = file.slice(bytePoint, bytePoint + chunkSize)
+                            try {
+                                readFileData(chunk);
+                            } catch (error) {
+                                console.log(error);
+                            }
+                        } else {
+                            console.log("CLOSING CHANNEL");
+                            sendChannel.close();
+                            fileReader.close();
+                        }
+                    }
+
+                    readNextChunk()
                 }
 
-
+                
                 async function checkBufferSize(dataChannel) {
 
                     return new Promise((resolve, reject) => {
@@ -310,7 +365,7 @@ function handleRemote() {
                 function readFileData(data) {
                     fileReader.readAsArrayBuffer(data);
                 }
-
+                
             });
 
         }

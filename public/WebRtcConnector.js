@@ -27,29 +27,35 @@ class WebRtcConnectionLocal {
 
     /** Create an offer and send to remote*/
     sendLocalDescToRemote = async (printStatus) => {
-        printStatus('start send Local description to remote')
-        // let options = {
-        //     iceRestart:true,
-        //     offerToReceiveAudio:true
-        // }
-        this.connection.createDataChannel('dummy');
-        const offer = await this.connection.createOffer();
-        printStatus('created offer')
-        await this.connection.setLocalDescription(offer);
-        printStatus('set local description as offer')
+        return new Promise(async (res, rej) => {
+            printStatus('start send Local description to remote')
+            // let options = {
+            //     iceRestart:true,
+            //     offerToReceiveAudio:true
+            // }
+            this.connection.createDataChannel('dummy');
+            const offer = await this.connection.createOffer();
+            printStatus('created offer')
+            await this.connection.setLocalDescription(offer);
+            printStatus('set local description as offer')
 
-        this.signallingChannel.send('message', { 'offer': offer });
-        printStatus('send offer to remote')
+            this.signallingChannel.send('message', { 'offer': offer });
+            printStatus('send offer to remote')
+            res();
+        });
     }
+
 
     /**This is used to get the answer from remote for the cnonection offer  */
     getRemoteDescription = async (printStatus) => {
         return new Promise((res, rej) => {
             this.signallingChannel.addEventListener('message', async message => {
                 message = JSON.parse(message.data);
+                message = message.message;
                 if (message.answer) {
                     const answer = new RTCSessionDescription(message.answer);
                     await this.connection.setRemoteDescription(answer);
+                    console.log("remote description set");
                     console.log(this.connection.canTrickleIceCandidates)
                     printStatus('setting remote description to answer');
                     res();
@@ -81,6 +87,7 @@ class WebRtcConnectionLocal {
         this.signallingChannel.addEventListener('message', async message => {
             console.log("received message: 84" + message);
             message = JSON.parse(message.data);
+            message = message.message;
             if (message.iceCandidate) {
                 try {
                     await this.connection.addIceCandidate(message.iceCandidate);
@@ -140,7 +147,7 @@ class WebRtcConnectionRemote {
                 message = JSON.parse(message.data);
 
                 // alert("receiving offer from remote");
-
+                message = message.message;
                 if (message.offer) {
                     const offer = new RTCSessionDescription(message.offer);
                     await this.connection.setRemoteDescription(offer);
@@ -175,6 +182,7 @@ class WebRtcConnectionRemote {
 
         this.signallingChannel.addEventListener('message', async message => {
             message = JSON.parse(message.data);
+            message = message.message;
             if (message.new_ice_candidate) {
                 try {
                     await this.connection.addIceCandidate(message.new_ice_candidate);

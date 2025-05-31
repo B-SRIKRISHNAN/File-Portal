@@ -133,3 +133,5 @@ dist
 ./server.js
 
 package-lock.json
+
+output/
