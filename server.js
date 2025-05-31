@@ -1,6 +1,6 @@
 let express = require('express');
 let fs = require('fs');
-let http = require('http')
+let https = require('https')
 let {Server} = require('socket.io')
 let url = process.env.API_ENDPOINT||"http://localhost:3000"
 let crypto = require('crypto');
@@ -16,7 +16,14 @@ let ws = require('ws')
    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
    next();
  });
-let server = http.createServer(app);
+let server = https.createServer(
+   {
+      key: fs.readFileSync(path.join(__dirname, 
+          "certificates", "key.pem")),
+      cert: fs.readFileSync(path.join(__dirname,
+          "certificates", "cert.pem")),
+  }
+   ,app);
 let wss = new ws.Server({ server });
 
 wss.on('connection', (ws) => {

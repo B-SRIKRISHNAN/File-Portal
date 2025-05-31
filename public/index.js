@@ -22,8 +22,13 @@ console.log(url);
 let apiUrl = url;
 if (!reciever && !input)
     throw new Error('No valid elements found');
+if(window.isSecureContext){
 
-let aws_wss_url = "ws://"+window.location.host;
+}else{
+    alert("secure window needed")
+    throw Error("Secure window needed")
+}
+let aws_wss_url = "wss://"+window.location.host;
 // "wss://7fkuyllf72.execute-api.eu-north-1.amazonaws.com/production/";
 
 let config = {
@@ -228,12 +233,7 @@ function handleRemote() {
                 console.log("connected to remote websocket server");
 
                 signallingChannel = new DefaultWebSocketSignallingChannel(socket);
-                if(window.isSecureContext)
-                    uId = crypto.randomUUID();
-                else{
-                    alert("secure window needed")
-                    throw Error("Secure window needed")
-                }
+                uId = crypto.randomUUID();
                 link.innerHTML = '<a href="' + apiUrl + '/getFile?uId=' + uId + '" target="blank">' + apiUrl + '/getFile?uId=' + uId + '</a>';
                 signallingChannel.setUId(uId);
                 signallingChannel.send('join', {});
