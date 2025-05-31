@@ -23,7 +23,7 @@ let apiUrl = url;
 if (!reciever && !input)
     throw new Error('No valid elements found');
 
-let aws_wss_url = "ws://localhost:3000";
+let aws_wss_url = "ws://"+window.location.host;
 // "wss://7fkuyllf72.execute-api.eu-north-1.amazonaws.com/production/";
 
 let config = {
