@@ -15,6 +15,7 @@ let link = document.getElementById("link");
 let logs = document.getElementById('logs');
 let downloadStatus = document.getElementById("downloadStatus");
 let uploadStatus = document.getElementById("uploadStatus");
+let time_ele = document.getElementById("time");
 
 let windowLoc = window.location.href;
 
@@ -227,6 +228,13 @@ function handleRemote() {
     let inputFileVal = null;
     let remoteConnection = null;
     let chunkSize = 256000;
+    let startTime = Date.now();
+
+    function trackTime(uploaded, size){
+        let time_taken = ((Date.now()-startTime)/1000)
+        time_ele.innerText = "Rate : "+((uploaded/1024)/time_taken)+" kb/s"+(((time_taken/uploaded)*size) - time_taken) +" seconds remaining"
+    }
+
 
     linkGenerator.onclick = () => {
         if (input.files[0]) {
@@ -330,6 +338,7 @@ function handleRemote() {
                         if (bytePoint <= size) {
                             console.log("sent");
                             sendChannel.send(fileReader.result);
+                            trackTime(bytePoint, size)
                             bytePoint += chunkSize;
                             updateUploadStatus("sent "+bytePoint+" bytes out of "+size +" = "+((bytePoint/size)*100)+"%")
                         }
