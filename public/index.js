@@ -14,6 +14,8 @@ let linkGenerator = document.getElementById("linkGenerator");
 let link = document.getElementById("link");
 let logs = document.getElementById('logs');
 let downloadStatus = document.getElementById("downloadStatus");
+let uploadStatus = document.getElementById("uploadStatus");
+
 let windowLoc = window.location.href;
 
 let url = windowLoc.substring(0, windowLoc.indexOf("/", 8));
@@ -277,6 +279,9 @@ function handleRemote() {
 
                 }
 
+                function updateUploadStatus(val) {
+                    uploadStatus.innerText = val + "%";
+                }
 
                 async function sendData(file, sendChannel) {
                     window.onbeforeunload = (event) => {
@@ -325,7 +330,7 @@ function handleRemote() {
                             console.log("sent");
                             sendChannel.send(fileReader.result);
                             bytePoint += chunkSize;
-                            printStatus("sent "+bytePoint+" bytes out of "+size +" = "+((bytePoint/size)*100)+"%")
+                            updateUploadStatus("sent "+bytePoint+" bytes out of "+size +" = "+((bytePoint/size)*100)+"%")
                         }
                         if (!shouldWait) {
                             readNextChunk();
