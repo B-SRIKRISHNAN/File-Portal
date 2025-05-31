@@ -137,7 +137,8 @@ function handleLocal() {
                                 // clearInterval(interval);
                                 // shouldWrite = false;
                                 // console.log("closing write channel");
-                                readable.push(null);
+                                // readable.push(null);
+                                readable.destroy();
                                 fileWriterObj.closeWritableStream().then(res => {
                                     updateDownloadStatus(100);
                                     printStatus('file downloaded');
@@ -280,7 +281,7 @@ function handleRemote() {
                 }
 
                 function updateUploadStatus(val) {
-                    uploadStatus.innerText = val + "%";
+                    uploadStatus.innerText = val;
                 }
 
                 async function sendData(file, sendChannel) {
@@ -290,7 +291,7 @@ function handleRemote() {
                     }
                     let shouldWait = false;
                     let bytePoint = 0;
-                    let chunkSize = 256000;//128000
+                    let chunkSize = 512000;//128000
                     let size = file.size;
                     let chunk = file.slice(bytePoint, bytePoint + chunkSize);
                     sendChannel.onmessage = (event) => {
