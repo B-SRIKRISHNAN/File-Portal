@@ -228,7 +228,7 @@ function handleRemote() {
     let inputFileVal = null;
     let remoteConnection = null;
     let chunkSize = 256000;
-    let startTime = Date.now();
+    let startTime = 0;
 
     function trackTime(uploaded, size){
         let time_taken = ((Date.now()-startTime)/1000)
@@ -282,7 +282,7 @@ function handleRemote() {
                             fileTransferChannel.binaryType = 'arraybuffer';
                             fileTransferChannel.bufferedAmountLowThreshold = 512000;//64 kb//32000//256000
                             fileTransferChannel.addEventListener('open', sendData(inputFileVal, fileTransferChannel))
-
+                            startTime = Date.now();
                         }
                     })
 
