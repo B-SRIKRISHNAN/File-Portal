@@ -225,7 +225,7 @@ function handleRemote() {
     let fileReader = new FileReader();
     let inputFileVal = null;
     let remoteConnection = null;
-    let chunkSize = 32000;
+    let chunkSize = 256000;
 
     linkGenerator.onclick = () => {
         if (input.files[0]) {
