@@ -269,7 +269,7 @@ function handleRemote() {
                         if (msg.channelCreate == true) {
                             let fileTransferChannel = connection.createDataChannel('fileTransfer', { ordered: true });
                             fileTransferChannel.binaryType = 'arraybuffer';
-                            fileTransferChannel.bufferedAmountLowThreshold = 256000;//64 kb//32000
+                            fileTransferChannel.bufferedAmountLowThreshold = 2560000;//64 kb//32000//256000
                             fileTransferChannel.addEventListener('open', sendData(inputFileVal, fileTransferChannel))
 
                         }
@@ -285,7 +285,7 @@ function handleRemote() {
                     }
                     let shouldWait = false;
                     let bytePoint = 0;
-                    let chunkSize = 128000;
+                    let chunkSize = 1280000;//128000
                     let size = file.size;
                     let chunk = file.slice(bytePoint, bytePoint + chunkSize);
                     sendChannel.onmessage = (event) => {
