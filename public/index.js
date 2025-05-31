@@ -232,8 +232,8 @@ function handleRemote() {
 
     function trackTime(uploaded, size){
         let time_taken = Math.round(((Date.now()-startTime)/1000))
-        let rate = Math.round((uploaded/1024)/time_taken)
-        let time_remain = ((Math.round(time_taken/uploaded)*size) - time_taken)
+        let rate = Math.round((uploaded/1024)/time_taken)//kbps
+        let time_remain = (Math.round((size/1024)/rate) - time_taken)
         time_ele.innerHTML = "<span>Time Till now: "+time_taken+" sec </span><br>"+"<span> Rate : "+rate+" kb/s </span><br>"+"<span>"+ time_remain+" seconds remaining </span>"
     }
 
