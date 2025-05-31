@@ -325,6 +325,7 @@ function handleRemote() {
                             console.log("sent");
                             sendChannel.send(fileReader.result);
                             bytePoint += chunkSize;
+                            printStatus("sent "+bytePoint+" bytes out of "+size +" = "+((bytePoint/size)*100)+"%")
                         }
                         if (!shouldWait) {
                             readNextChunk();
