@@ -228,7 +228,12 @@ function handleRemote() {
                 console.log("connected to remote websocket server");
 
                 signallingChannel = new DefaultWebSocketSignallingChannel(socket);
-                uId = crypto.randomUUID();
+                if(window.isSecureContext)
+                    uId = crypto.randomUUID();
+                else{
+                    alert("secure window needed")
+                    throw Error("Secure window needed")
+                }
                 link.innerHTML = '<a href="' + apiUrl + '/getFile?uId=' + uId + '" target="blank">' + apiUrl + '/getFile?uId=' + uId + '</a>';
                 signallingChannel.setUId(uId);
                 signallingChannel.send('join', {});
