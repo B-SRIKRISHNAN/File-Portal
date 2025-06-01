@@ -186,7 +186,8 @@ function handleLocal() {
                             console.log("Written chunk " + (sizeDownloaded / chunkSize) + "to file");
                             if (sizeDownloaded > fileSize)
                                 sizeDownloaded = fileSize;
-                            updateDownloadStatus((sizeDownloaded / fileSize) * 100);
+                            let percent = Math.round(sizeDownloaded / fileSize) * 100
+                            updateDownloadStatus(percent);
                         }
                     }).catch(error => {
                         console.log("error: " + error);
