@@ -351,7 +351,7 @@ function handleRemote() {
                             let percent = Math.round((bytePoint/size)*100)
                             let bytePtText = Math.round(bytePoint/1024)
                             let totalkb = Math.round(size/1024)
-                            updateUploadStatus("sent "+bytePtText+" bytes out of "+totalkb +" = "+percent+"%")
+                            updateUploadStatus("sent "+bytePtText+"Kilo bytes out of "+totalkb +" = "+percent+"%")
                         }
                         if (!shouldWait) {
                             readNextChunk();
@@ -374,7 +374,7 @@ function handleRemote() {
                             sendChannel.close();
                             let percent = Math.round((bytePoint/size)*100)
                             updateUploadStatus("sent "+bytePoint+" bytes out of "+size +" = "+percent+"%. Upload Complete")
-                            fileReader.close();
+                            // fileReader.close();
                         }
                     }
 
