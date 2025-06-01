@@ -349,7 +349,9 @@ function handleRemote() {
                             trackTime(bytePoint, size)
                             bytePoint += chunkSize;
                             let percent = Math.round((bytePoint/size)*100)
-                            updateUploadStatus("sent "+bytePoint+" bytes out of "+size +" = "+percent+"%")
+                            let bytePtText = Math.round(bytePoint/1024)
+                            let totalkb = Math.round(size/1024)
+                            updateUploadStatus("sent "+bytePtText+" bytes out of "+totalkb +" = "+percent+"%")
                         }
                         if (!shouldWait) {
                             readNextChunk();
