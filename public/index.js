@@ -366,8 +366,10 @@ function handleRemote() {
                                 console.log(error);
                             }
                         } else {
+                            bytePoint = size
                             console.log("CLOSING CHANNEL");
                             sendChannel.close();
+                            let percent = Math.round((bytePoint/size)*100)
                             updateUploadStatus("sent "+bytePoint+" bytes out of "+size +" = "+percent+"%. Upload Complete")
                             fileReader.close();
                         }
