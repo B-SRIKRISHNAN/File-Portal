@@ -141,8 +141,13 @@ function handleLocal() {
                                 // readable.push(null);
                                 readable.destroy();
                                 fileWriterObj.closeWritableStream().then(res => {
-                                    updateDownloadStatus(100);
-                                    printStatus('file downloaded');
+                                    if (sizeDownloaded >= fileSize){
+                                        updateDownloadStatus(100);
+                                        printStatus('file downloaded');
+                                    }else{
+                                        printStatus('file download failed');
+                                    }
+                                    
                                 })
                             });
 
@@ -342,7 +347,8 @@ function handleRemote() {
                             sendChannel.send(fileReader.result);
                             trackTime(bytePoint, size)
                             bytePoint += chunkSize;
-                            updateUploadStatus("sent "+bytePoint+" bytes out of "+size +" = "+((bytePoint/size)*100)+"%")
+                            let percent = Math.round((bytePoint/size)*100)
+                            updateUploadStatus("sent "+bytePoint+" bytes out of "+size +" = "+percent+"%")
                         }
                         if (!shouldWait) {
                             readNextChunk();
@@ -350,9 +356,10 @@ function handleRemote() {
                     }
 
                     function readNextChunk() {
-                        if (bytePoint < size) {
+                        if (bytePoint <= size) {
                             console.log("sending");
-                            chunk = file.slice(bytePoint, bytePoint + chunkSize)
+                            let slice = (bytePoint + chunkSize)>=size?size:(bytePoint + chunkSize)
+                            chunk = file.slice(bytePoint, slice)
                             try {
                                 readFileData(chunk);
                             } catch (error) {
@@ -361,6 +368,7 @@ function handleRemote() {
                         } else {
                             console.log("CLOSING CHANNEL");
                             sendChannel.close();
+                            updateUploadStatus("sent "+bytePoint+" bytes out of "+size +" = "+percent+"%. Upload Complete")
                             fileReader.close();
                         }
                     }
